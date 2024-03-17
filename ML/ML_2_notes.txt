@@ -1,0 +1,236 @@
+1.3 Manifold Learning
+
+assume you have 2d plane, in spiral
+c(t) = (tcost tsint)T eleman R^2, t eleman R^1
+if you do PCA, no direction you can use
+you need to locally do computation, manifold
+
+
+1.3.1 Why do we need to care about manifolds
+	- linear representation-learning techniques fail to reduce the dimensinalitf of
+	the data representation, like the spiral case.
+1.3.2 What is a manifold
+
+Geometry
+a set of points curly M (manifold),
+
+if each local neighborhood can be mapped to R^N
+they are locally linear 
+curly M is differentiable if we can compute derivatives
+	tangent space of manifold
+
+curly M is Riemannian if
+	we can compute scaler product in tangent space < , >
+	(to learn similarity)
+
+Earth example
+	locally flat, globally sphare
+
+manifold is the locally approximations to solve our problem
+
+1.3.3 Vectors, one-forms, and the metric tensor
+
+In geometry,
+	vectors are defined by points, A to B points 
+	it might have coordinates and basis (e1 basis and e2 basis)
+	projecting these basis gives you the vector
+	vector AB
+	
+	one-forms are functions that assign numbers to vectors
+	take vectors 
+	let us we have vector v (array)
+	one-form w (tilda)
+	w(v) = <w, v> eleman R^1 
+	
+let us we have vector x (array)
+vector x = x^i.ei (ei is a basis vector, x^i is components of vector)
+	
+Einstein convention, no sum sign
+	if you have one index below and above,
+	you have to sum over these indexes whitout sum notation
+	
+xi = vector x . ei (ei is a basis vector, xi is one-form)
+	
+convention:
+	x^i and xi which are components of vector and one-form respectively
+
+in geometry,
+	the gradient of a function is a one-form
+	the directional derivatives are vectors
+
+a metric defined as gij = ei.ej (scaler product of bases functions)
+transfer vectors from one from to vector or vice-versa.
+
+vectors and one-forms are "the same thing"
+only if the metric is euclidian
+
+<X,Y> = XT.Y (X and Y vectors)
+
+---
+
+length of a curve,
+line elements -> ds^2
+
+different distance calculation for monifolds, instead of euclidian,
+geodesic distance 
+	the length of a shortest curve between two points 
+	able to find spiral manifolds
+
+
+---------------------------------------------
+*********************************************
+MDS - Multidimensional Scaling
+
+the goal of MDS is to 
+	find coordinates of points
+	given ditances between the points
+	
+şöyle düşün, dünyadaki iki şehir var,
+	bunları flat bir 2d lik plane e koyup
+	aradaki mesafeye bakıyorsun
+	
+	biz bir map yapmaya çalışıyoruz
+	original points on this map in 2D
+	by keeping the distances of two points 
+	but change the dimension
+
+Representation learning?
+
+R^N to R^M,  M is the lower dimension, reduce dimension
+	but also keep relevant information
+	preserve distances - similarities of data points in ML
+
+dissimilarity matrix
+	if you want to keep similarities 
+	
+	we have data points
+		x1 ... xp (vectors)
+	x1
+	...		d(xi, xj) = dij
+	xp
+ (vectors)
+	
+	we only care about distances, not coordinates 
+
+Classical MDS, Euclidian distances/metric
+	we can now define optimization problem
+	we have dissimilarity matrix dij^X (distance in original)
+								 dij^Y (what we are looking for)
+	
+	min (sum sum (dij^X - dij^Y)^2) 
+	euclidian distances dij^X = || || and dij^Y = || ||
+	that is our optimization problem
+	we want to minimize min Y ...
+	
+	Y = X MDS, new notation
+	X MDS minizes the error in optimization problem 
+	
+	Notation:
+		XpxN metrices that contain all data points
+			p is the number of data points 
+			N is the original dimension of data vectors 
+		YpxM feature points - different representation
+			where M < N
+		distance metrices,
+			in the original space, 
+				D^(X) = dij^(x)
+			in the feature space,
+				D^(Y) = dij^(y)
+		stress matrix
+			D^(X) - D^(Y)
+		
+		these distance metrices 
+			size of metrices does not depend on dimension 
+		
+the first optimization problem is equal to eq 2
+
+gram matrix pxp
+	contains scaler product xi xj = Bij
+
+V eigenvector of B corresponding
+	to the M largest eigenvalues of B
+	
+-------------------------------------------
+*******************************************
+ISOMAP
+
+idea is to use MDS
+but instead of Euclidian distances
+we want to use geodesic distances 
+
+manifolds are locally euclidian
+use Euclidian distances but only locally
+near by points
+
+based on line element - geodesic distances 
+
+algorithm
+	1. derive neighborhood graph
+	go to every point
+	define neighboors of the point
+	define a region around a point
+	
+	work with neighboors,
+	do it for every points 
+	
+	thats defining a graph
+	
+	1a. determine/compute k or epsilon neighborhoods
+		k - neighbors of k closest
+		epsilon - inside of a region 
+	do that for every data point xi
+	
+	1b. link the neighboors
+	obtain a graph 
+	
+	1c. assign each edge in the graph
+	assign a weight
+	each edges are weigheted by Euclidian distance between 2 points 
+	close by - manifold is locally euclidian to that point
+		
+	2. compute geodesic distances 
+	
+	2a. compute the distances between all pairs
+	along all connected path
+	
+	there could be another path, multiple paths between AB
+	we have to calculate all these 
+	
+	2b. find the shortest path
+		Dijkstra - to find shortest path between two points 
+	
+	we have our stress matrix Dpxp
+	distance matrix D
+	
+	3. M-dimensional embedding Y, finding features
+	
+	go from stress matrix to gram matrix 
+	
+	B = -1/2 * H * D * H
+	then by doing eigenvalue analysis define our features YpxM
+	
+	similarity based on geodesic distances 
+
+Challenges with this algorithm,
+	few samples - cant really make the assumption
+	noise - not really have spiral
+	how to chose size of neighborhood
+		too large, might miss structure
+		too small, disconnect, empty spaces
+
+
+
+neighborhood = permutation[0:n_neighbors,:] # for each row the K-NNs indices
+
+distances_local = np.zeros(np.shape(distances))
+for i in range(n_samples):
+    for j in range(n_neighbors):
+     distances_local[i,neighborhood[j,i]] = distances[i,neighborhood[j,i]]
+
+---
+
+for i in range(n_samples):
+   # TODO: write the K-NNs (of the i-th row) distances to the position of K-NNs
+   indices = permutation[0:n_neighbors,i]
+   distances_local[i,indices] = distances[i,indices]
+
