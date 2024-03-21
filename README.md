@@ -74,6 +74,43 @@ Courses: **Machine Learning, Computer Vision, Artificial Intelligence, Medical D
 
 ## Artificial Intelligence - MATLAB
 
+1. Nearest Neigbor
+
+* Matlab Introduction
+* Brute Force
+
+2. Linear Programming
+
+3. Perceptron
+
+* Pattern-by-Pattern Learning
+* Batch Learning
+
+4. Quadratic Programming
+
+* Optimization and Maximum Margin
+
+5. Duality (no code)
+
+* Dual Linear Program
+* Equilibrium Theorem
+* Strong Duality Theorem
+* Weak Duality Theorem
+
+6. Lagrange Multipliers
+
+7. Polynomial Kernels
+
+8. Simplified Sequential Minimal Optimization (SMO)
+
+9. Support Vector Regression (SVR)
+
+10. Neural Networks
+
+* Classification
+* Sigmoid Activation Function
+* Multi-Layer-Perceptron (MLP)
+
 
 ## Medical Deep Learning - PyTorch 
 
